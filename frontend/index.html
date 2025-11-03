@@ -1,33 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Medical Chatbot (RAG + Ollama)</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css" />
 </head>
 <body>
     <div class="chat-container">
         <div class="chat-header">
-            <h1>Medical Assistant</h1>
+            <h1>🩺 Medical Assistant</h1>
             <p>Powered by RAG + Ollama</p>
         </div>
-        
+
         <div class="chat-messages" id="chat-messages">
-            <!-- Messages will be inserted here -->
+            <!-- Messages appear here -->
         </div>
-        
+
         <div class="chat-input">
-            <textarea 
-                id="user-input" 
-                placeholder="Ask a medical question..."
-                rows="2"
-                maxlength="500"
-            ></textarea>
+            <textarea id="user-input" placeholder="Ask a medical question..." rows="2" maxlength="500"></textarea>
             <button id="send-btn">Send</button>
         </div>
     </div>
-    
+
     <script src="script.js"></script>
 </body>
 </html>

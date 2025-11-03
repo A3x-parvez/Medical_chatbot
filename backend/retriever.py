@@ -72,10 +72,25 @@ class MedicalRetriever:
             # Update temperature if provided
             if temperature is not None:
                 self.llm.temperature = temperature
+
+            # 🧠 Add instruction to restrict model to PDF content
+            # instruction = (
+            #     "Answer ONLY using information from the provided document. "
+            #     "If the document does not contain relevant details, respond with: "
+            #     "'Not mentioned in the document.'\n\n"
+            # )
+            instruction = (
+                "Use the provided medical document as your main source. "
+                "If the document does not contain relevant information, "
+                "you may use your general verified medical knowledge. "
+                "Always specify when your answer is based on general knowledge."
+            )
+            question = instruction + f"Question: {query}"
+
             
             # Get response from QA chain
-            response = self.qa_chain.invoke(query)
-            
+            response = self.qa_chain.invoke(question)
+
             return {
                 "response": response["result"],
                 "success": True
