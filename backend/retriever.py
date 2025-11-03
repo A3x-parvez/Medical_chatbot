@@ -33,14 +33,29 @@ class MedicalRetriever:
         # Create prompt template
         self.prompt_template = PromptTemplate(
             input_variables=["context", "question"],
-            template="""You are a helpful medical assistant. Use the following medical context to answer the question. 
-            If you cannot find a relevant answer in the context, say so - do not make up information.
-            
-            Context: {context}
-            
-            Question: {question}
-            
-            Answer:"""
+            template="""
+            You are MedAI — a calm, knowledgeable, and trustworthy medical assistant.
+
+            Your goal is to answer the user's medical questions **accurately and concisely**.
+            Use the provided medical context as your **main source of truth**.
+            If the context does not fully answer the question, you may use your **own verified medical knowledge**
+            — but blend it naturally and never mention using any document or source.
+
+            Guidelines:
+            - Focus on clear, factual, and to-the-point answers.
+            - Avoid repeating or quoting the question.
+            - Do not invent new information or use uncertain speculation.
+            - If the question is unrelated to medicine, gently say you’re not able to help with that.
+            - Maintain a professional, empathetic tone suitable for a healthcare assistant.
+
+            Context:
+            {context}
+
+            Question:
+            {question}
+
+            Answer:
+            """
         )
         
         # Create QA chain
@@ -80,10 +95,9 @@ class MedicalRetriever:
             #     "'Not mentioned in the document.'\n\n"
             # )
             instruction = (
-                "Use the provided medical document as your main source. "
-                "If the document does not contain relevant information, "
-                "you may use your general verified medical knowledge. "
-                "Always specify when your answer is based on general knowledge."
+                "Use the retrieved medical information as your main basis for answers. "
+                "If you believe a small amount of general medical knowledge helps clarify the response, "
+                "you may use it — but always keep the focus on factual, medically safe, and relevant information."
             )
             question = instruction + f"Question: {query}"
 
