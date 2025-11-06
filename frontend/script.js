@@ -3,9 +3,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const userInput = document.getElementById("user-input");
     const sendButton = document.getElementById("send-btn");
 
-    // Initial welcome message
+    // Initial welcome
     addMessage(
-        "Hello! I'm your medical assistant 🤖. I can answer your medical questions based on my knowledge. How can I help you today?",
+        "Hello! I'm your medical assistant 🤖. How can I help you today?",
         "bot"
     );
 
@@ -21,19 +21,14 @@ document.addEventListener("DOMContentLoaded", () => {
         const query = userInput.value.trim();
         if (query === "") return;
 
-        // Clear and disable input
         userInput.value = "";
         userInput.disabled = true;
         sendButton.disabled = true;
 
-        // Add user message
         addMessage(query, "user");
-
-        // Add loading indicator
         const loadingId = addLoadingIndicator();
 
         try {
-            // Send to Flask backend
             const response = await fetch("http://127.0.0.1:5000/chat", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -49,7 +44,8 @@ document.addEventListener("DOMContentLoaded", () => {
                         ? data.response
                         : JSON.stringify(data.response, null, 2);
 
-                await typeMessage(botReply, "bot");
+                // ✅ call instant fast typer
+                typeMessageFast(botReply, "bot");
             } else {
                 addMessage("⚠️ Something went wrong. Please try again.", "bot");
             }
@@ -59,7 +55,6 @@ document.addEventListener("DOMContentLoaded", () => {
             addMessage("❌ Server error. Please try again.", "bot");
         }
 
-        // Re-enable input
         userInput.disabled = false;
         sendButton.disabled = false;
         userInput.focus();
@@ -73,16 +68,31 @@ document.addEventListener("DOMContentLoaded", () => {
         chatMessages.scrollTop = chatMessages.scrollHeight;
     }
 
-    async function typeMessage(text, sender) {
+    // 🚀 FAST typewriter effect that won't freeze when tab inactive
+    async function typeMessageFast(text, sender) {
         const messageDiv = document.createElement("div");
         messageDiv.className = `message ${sender}-message`;
         chatMessages.appendChild(messageDiv);
 
-        for (let i = 0; i < text.length; i++) {
-            messageDiv.textContent = text.slice(0, i + 1);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-            await new Promise((r) => setTimeout(r, 15));
+        let index = 0;
+        const chunkSize = 8; // how many characters appear per frame
+        const interval = 10; // ms delay between updates
+
+        function typeChunk() {
+            if (index < text.length) {
+                messageDiv.textContent = text.slice(0, index + chunkSize);
+                index += chunkSize;
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+                // Use requestAnimationFrame or short timeout; both safe
+                setTimeout(typeChunk, interval);
+            } else {
+                messageDiv.textContent = text;
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
         }
+
+        // Start without waiting for focus (doesn't freeze in background)
+        requestAnimationFrame(typeChunk);
     }
 
     function addLoadingIndicator() {
