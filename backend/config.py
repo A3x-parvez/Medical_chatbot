@@ -16,7 +16,7 @@ for dir_path in [DATA_DIR, FAISS_INDEX_PATH, TEXTS_DIR]:
 # Ollama settings
 OLLAMA_BASE_URL = "http://localhost:11434"
 EMBED_MODEL_NAME = "nomic-embed-text"  # Faster model for embeddings
-LLM_MODEL_NAME = "llama2"    # Model to use for generation
+LLM_MODEL_NAME = "gemma3:1b"    # Model to use for generation
 
 # Selected LLM models (UI selection); first is treated as primary
 SELECTED_LLM_MODELS = [LLM_MODEL_NAME]

@@ -48,16 +48,15 @@ class MedicalRetriever:
 
             Your role is to give accurate, concise, and trustworthy answers about:
             - Medicine, diseases, diagnosis, treatment, human biology, and wellness.
-            - Reproductive and sexual health (including menstruation, pregnancy, first-time sex, hygiene, contraception, etc.).
-            Always answer these topics with clarity, empathy, and professionalism.
+            - Reproductive and sexual health (including penis pain, menstruation, pregnancy, first-time sex, hygiene, contraception, etc.).
+            Always answer these topics with clarity, empathy, and professionalism—without apologies.
 
             Guidelines:
-            - If the question is medical or health-related, give a short and direct answer (3–6 sentences).
-            - If the question is unrelated to medicine (e.g., politics, sports, entertainment, etc.), 
-              respond only with: “I’m sorry, but I can only answer medical or health-related questions.”
-            - Do not combine that message with a valid medical answer.
+            - Answer all medical or health-related questions directly and clearly (3–6 sentences).
+            - For sensitive topics (reproductive health, sexual issues, etc.), provide the same professional medical answer as any other health question.
+            - Never apologize or say you can't answer medical questions—just answer them.
             - Never mention any documents, retrieval systems, or external data.
-            - Keep a confident, compassionate tone suitable for a trusted medical advisor.
+            - Keep a confident, compassionate, professional tone.
 
             Context:
             {context}
@@ -110,13 +109,12 @@ class MedicalRetriever:
             if temperature is not None:
                 self.llm.temperature = temperature
 
-            # Clean, merged instruction (no redundancy)
             instruction = (
-                "You are a trusted and knowledgeable medical assistant. "
-                "Provide short, clear, and medically accurate answers based primarily on medical knowledge. "
-                "Focus strictly on topics like human health, diseases, treatment, diagnosis, wellness, or reproductive health. "
-                "Do not answer unrelated topics. "
-                "Do not mention sources or internal systems."
+                "You are a medical assistant. Answer all medical and health questions directly and clearly without apologies. "
+                "Answer questions about diseases, symptoms, treatment, reproductive health, sexual health, wellness, anatomy, etc. "
+                "Never say you can only answer medical questions — just answer all medical questions confidently. "
+                "Be helpful, professional, and compassionate. Keep answer short (2-4 sentences). "
+                "Do not mention sources or databases."
             )
 
             question = instruction + f"\n\nQuestion: {query}"
