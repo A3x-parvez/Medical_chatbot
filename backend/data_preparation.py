@@ -6,6 +6,11 @@ from langchain_ollama import OllamaEmbeddings
 from langchain_community.vectorstores import FAISS
 
 import config
+import os
+import json
+import datetime
+
+
 
 def load_and_split_pdf() -> List:
     """Load PDF and split into chunks."""
@@ -50,6 +55,20 @@ def create_vectorstore(documents: List) -> None:
         vectorstore = FAISS.from_documents(documents, embeddings)
         vectorstore.save_local(config.FAISS_INDEX_PATH)
         print(f"Vectorstore saved to: {config.FAISS_INDEX_PATH}")
+
+        # Save metadata about embedding model used to build this index
+        try:
+            meta = {
+                "embed_model": config.EMBED_MODEL_NAME,
+                "created_at": datetime.datetime.utcnow().isoformat() + "Z"
+            }
+            os.makedirs(config.FAISS_INDEX_PATH, exist_ok=True)
+            meta_path = os.path.join(config.FAISS_INDEX_PATH, "meta.json")
+            with open(meta_path, "w", encoding="utf-8") as mf:
+                json.dump(meta, mf)
+            print(f"FAISS meta saved to: {meta_path}")
+        except Exception as e:
+            print(f"Warning: could not write FAISS meta file: {e}")
         
     except Exception as e:
         print(f"Error creating vectorstore: {str(e)}")

@@ -11,6 +11,28 @@
         <div class="chat-header">
             <h1>🩺 Medical Assistant</h1>
             <p>Powered by RAG + Ollama</p>
+
+            <!-- Model selection controls (ChatGPT-style dropdown + multi-select chips) -->
+            <div id="model-controls" class="model-controls">
+                <div class="model-dropdown" id="model-dropdown">
+                    <button class="dropdown-toggle" id="model-toggle" aria-expanded="false">
+                        <span class="selected-label">Model</span>
+                        <span class="chev">▾</span>
+                    </button>
+
+                    <div class="dropdown-panel" id="model-panel" hidden>
+                        <div class="panel-controls">
+                            <input id="model-search" class="model-search" placeholder="Search models..." />
+                        </div>
+
+                        <ul id="model-list" class="model-list" role="listbox"></ul>
+                        <div class="panel-footer"><small id="model-panel-footer"></small></div>
+                    </div>
+                </div>
+
+                <div class="selected-chips" id="selected-chips" aria-live="polite"></div>
+                <span id="model-status" class="model-status"></span>
+            </div>
         </div>
 
         <div class="chat-messages" id="chat-messages">

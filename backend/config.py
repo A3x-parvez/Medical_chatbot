@@ -18,6 +18,15 @@ OLLAMA_BASE_URL = "http://localhost:11434"
 EMBED_MODEL_NAME = "nomic-embed-text"  # Faster model for embeddings
 LLM_MODEL_NAME = "llama2"    # Model to use for generation
 
+# Selected LLM models (UI selection); first is treated as primary
+SELECTED_LLM_MODELS = [LLM_MODEL_NAME]
+
+# Path to FAISS metadata (stores which embedding model was used to build the index)
+FAISS_META_FILE = os.path.join(FAISS_INDEX_PATH, "meta.json")
+
+# Will be populated at startup with available models from Ollama
+MODEL_LIST = []
+
 # Text splitting settings
 CHUNK_SIZE = 1500
 CHUNK_OVERLAP = 300

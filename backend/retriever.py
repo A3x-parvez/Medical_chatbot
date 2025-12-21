@@ -1,4 +1,6 @@
 from typing import Dict
+import os
+import json
 from langchain_community.embeddings import OllamaEmbeddings
 from langchain_community.llms import Ollama
 from langchain_community.vectorstores import FAISS
@@ -9,25 +11,33 @@ import config
 
 
 class MedicalRetriever:
-    def __init__(self):
-        """Initialize the medical retriever with Ollama models and FAISS."""
-        # Initialize embeddings
+    def __init__(self, llm_model: str = None):
+        """Initialize the medical retriever with Ollama models and FAISS.
+
+        Uses a single, fixed embedding model (configured in `config.EMBED_MODEL_NAME`).
+        llm_model: model to use for generation
+        """
+        # Single embedding model (no dynamic embedding switching)
+        self.embed_model = config.EMBED_MODEL_NAME
+        self.llm_model = llm_model or config.LLM_MODEL_NAME
+
+        # Initialize embeddings using the single configured embedding model
         self.embeddings = OllamaEmbeddings(
             base_url=config.OLLAMA_BASE_URL,
-            model=config.EMBED_MODEL_NAME
+            model=self.embed_model
         )
-        
+
         # Load FAISS index
         self.vectorstore = FAISS.load_local(
             config.FAISS_INDEX_PATH,
             self.embeddings,
             allow_dangerous_deserialization=True
         )
-        
+
         # Initialize LLM
         self.llm = Ollama(
             base_url=config.OLLAMA_BASE_URL,
-            model=config.LLM_MODEL_NAME
+            model=self.llm_model
         )
 
         # ---- Persona and Behavior Template ----
@@ -69,6 +79,29 @@ class MedicalRetriever:
 
         print("✅ Medical retriever initialized successfully")
 
+    def update_llm(self, new_llm_model: str):
+        """Switch the LLM model used for generation at runtime."""
+        if not new_llm_model:
+            return
+        print(f"🔧 Updating LLM model to: {new_llm_model}")
+        self.llm_model = new_llm_model
+        self.llm = Ollama(base_url=config.OLLAMA_BASE_URL, model=self.llm_model)
+        # Recreate the chain to pick up new llm
+        self.qa_chain = RetrievalQA.from_chain_type(
+            llm=self.llm,
+            chain_type="stuff",
+            retriever=self.vectorstore.as_retriever(search_kwargs={"k": 3}),
+            chain_type_kwargs={"prompt": self.prompt_template}
+        )
+
+    def get_state(self) -> Dict:
+        """Return current model state for API/UI."""
+        return {
+            "embed_model": self.embed_model,
+            "llm_model": self.llm_model,
+            "llm_models": config.SELECTED_LLM_MODELS
+        }
+
     def get_answer(self, query: str, temperature: float = None) -> Dict:
         """
         Get an answer for a medical query.
@@ -92,7 +125,7 @@ class MedicalRetriever:
             response = self.qa_chain.invoke(question)
 
             return {
-                "response": response["result"],
+                "response": response.get("result", str(response)),
                 "success": True
             }
 
